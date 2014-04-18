@@ -22,7 +22,7 @@ cursor = db.cursor()
 session = requests.session()
 session.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:28.0) Gecko/20100101 Firefox/28.0'})
 
-def getFormHiddenData(form):
+def get_hidden_form_data(form):
     ret = dict()
     for i in form.findAll('input', type='hidden'):
         ret[i['name']] = i['value']
@@ -34,24 +34,24 @@ def login(email, password):
     LOGIN_POST_URL = 'https://www.amazon.com/ap/signin'
     login_page = BeautifulSoup(session.get(LOGIN_URL).text)
     form = login_page.find('form', id='ap_signin_form')
-    data = getFormHiddenData(form)
+    data = get_hidden_form_data(form)
     data.update({'email': email, 'password': password})
     session.post(LOGIN_POST_URL, data)
 
-def getContents():
+def get_contents():
     URL = 'https://www.amazon.com/gp/digital/fiona/manage/features/order-history/ajax/queryPdocs.html'
     req = session.post(URL, {'offset': 0, 'count': 15, 
         'contentType': 'Personal Document', 'queryToken': 0, 'isAjax': 1})
     return [{'category': i['category'], 'contentName': i['asin']} 
             for i in req.json()['data']['items']]
 
-def deliverContent(content):
+def deliver_content(content):
     URL = 'https://www.amazon.com/gp/digital/fiona/content-download/fiona-ajax.html/ref=kinw_myk_ro_send'
     content.update({'isAjax': '1', 'deviceID': DEVICE})
     req = session.post(URL, content)
     assert req.json()['data'] == 1
 
-def deliverAll(contents):
+def deliver_all(contents):
     logging.info('Delivering...')
     def contentInDB(content):
         try:
@@ -66,7 +66,7 @@ def deliverAll(contents):
     for content in contents:
         try:
             logging.info('delivering ' + content['contentName'])
-            deliverContent(content)
+            deliver_content(content)
         except:
             logging.error('Error, ignore')
             pass
@@ -77,8 +77,8 @@ def deliverAll(contents):
     db.commit()
 
 if __name__ == '__main__':
-    logging.basicConfig(filename=sys.path[0], 'main.log'), 
+    logging.basicConfig(filename=path.join(sys.path[0], 'main.log'), 
                         level='INFO', 
                         format='%(asctime)s [%(levelname)s] %(message)s')
     login(EMAIL, PASSWORD)
-    deliverAll(getContents())
+    deliver_all(get_contents())
