@@ -16,12 +16,11 @@ if hasattr(sys, 'setdefaultencoding'):
     sys.setdefaultencoding('UTF-8')
 
 
-db = sqlite3.connect(\
-        path.join(path.dirname(path.realpath(__file__)), 'main.db'))
+db = sqlite3.connect(sys.path[0], 'main.db')
 cursor = db.cursor()
 
 session = requests.session()
-session.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36'})
+session.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:28.0) Gecko/20100101 Firefox/28.0'})
 
 def getFormHiddenData(form):
     ret = dict()
@@ -78,7 +77,7 @@ def deliverAll(contents):
     db.commit()
 
 if __name__ == '__main__':
-    logging.basicConfig(filename=path.join(path.dirname(path.realpath(__file__)), 'main.log'), 
+    logging.basicConfig(filename=sys.path[0], 'main.log'), 
                         level='INFO', 
                         format='%(asctime)s [%(levelname)s] %(message)s')
     login(EMAIL, PASSWORD)
