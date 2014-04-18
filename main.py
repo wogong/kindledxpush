@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 # -*- coding=UTF-8 -*-
-# Created at Jun 18 08:46 by BlahGeek@Gmail.com
 
+from os import path
+from datetime import datetime
+import logging
+import sqlite3
 import sys
-if hasattr(sys, 'setdefaultencoding'):
-    sys.setdefaultencoding('UTF-8')
-
 
 import requests
 from bs4 import BeautifulSoup
-from os import path
-from datetime import datetime
 from config import EMAIL, PASSWORD, DEVICE
-import logging
-import sqlite3
+
+reload(sys)
+if hasattr(sys, 'setdefaultencoding'):
+    sys.setdefaultencoding('UTF-8')
+
 
 db = sqlite3.connect(\
         path.join(path.dirname(path.realpath(__file__)), 'main.db'))
