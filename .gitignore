@@ -3,4 +3,5 @@ __pycache__/
 *.py[cod]
 config.py
 project_state
-
+main.db
+main.log
