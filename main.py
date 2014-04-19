@@ -22,33 +22,32 @@ cursor = db.cursor()
 s = requests.session()
 s.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:28.0) Gecko/20100101 Firefox/28.0'})
 
-def get_hidden_form_data(form):
-    ret = dict()
-    for i in form.findAll('input', type='hidden'):
-        ret[i['name']] = i['value']
-    return ret
+def get_hidden_form_data(page):
+    hidden_form_data = dict()
+    for i in page.findAll('input', type='hidden'):
+        hidden_form_data[i['name']] = i['value']
+    return hidden_form_data
 
 def login(email, password):
     logging.info('Login...')
     login_url = 'https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fyourstore%2Fhome%3Fie%3DUTF8%26ref_%3Dgno_signin'
     login_post_url = 'https://www.amazon.com/ap/signin'
     login_page = BeautifulSoup(s.get(login_url).text)
-    form = login_page.find('form', id='ap_signin_form')
-    data = get_hidden_form_data(form)
+    data = get_hidden_form_data(login_page)
     data.update({'email': email, 'password': password})
     s.post(login_post_url, data)
 
 def get_contents():
-    URL = 'https://www.amazon.com/gp/digital/fiona/manage/features/order-history/ajax/queryPdocs.html'
-    r = s.post(URL, {'offset': 0, 'count': 15, 
+    url = 'https://www.amazon.com/gp/digital/fiona/manage/features/order-history/ajax/queryPdocs.html'
+    r = s.post(url, {'offset': 0, 'count': 15, 
         'contentType': 'Personal Document', 'queryToken': 0, 'isAjax': 1})
-    return [{'category': i['category'], 'contentName': i['asin']} 
-            for i in r.json()['data']['items']]
+    return [{'category': item['category'], 'contentName': item['asin']} 
+            for item in r.json()['data']['items']]
 
 def deliver_content(content):
-    URL = 'https://www.amazon.com/gp/digital/fiona/content-download/fiona-ajax.html/ref=kinw_myk_ro_send'
+    url = 'https://www.amazon.com/gp/digital/fiona/content-download/fiona-ajax.html/ref=kinw_myk_ro_send'
     content.update({'isAjax': '1', 'deviceID': DEVICE})
-    r = s.post(URL, content)
+    r = s.post(url, content)
     assert r.json()['data'] == 1
 
 def deliver_all(contents):
