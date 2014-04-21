@@ -5,3 +5,4 @@ config.py
 project_state
 main.db
 main.log
+*.swp
