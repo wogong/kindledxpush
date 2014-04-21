@@ -24,8 +24,9 @@ s.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:28.0
 
 def get_hidden_form_data(page):
     hidden_form_data = dict()
-    for i in page.findAll('input', type='hidden'):
-        hidden_form_data[i['name']] = i['value']
+    input_tags = page.findAll('input', type='hidden')
+    for tag in input_tags:
+        hidden_form_data[tag['name']] = tag['value']
     return hidden_form_data
 
 def login(email, password):
