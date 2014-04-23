@@ -8,14 +8,14 @@
 
 使用前需要新建一个`config.py`，包含以下内容：
 
-    EMAIL = "xxx@gmail.com" # 你的用户名
-    PASSWORD = "xxxxxx" # 你的密码
-    DEVICE = "xxxxxx"
+    EMAIL = "xxx@gmail.com"  # 你的用户名
+    PASSWORD = "xxxxxx"      # 你的密码
+    DEVICE = "xxxxxx"        # 你的设备ID
+    COUNT = 15               # 一次要检查投递的文档，默认是15（一页），第一次如果有很多要投递，请设大一些或者给直接精确数值
 
 最后一个设备ID，需要在网页上查看。进入`Your Kindle Library`，选择一个文档，点击Action-Deliver，在出现的窗口中审查元素（查看源代码）。
 
 ![](https://github.com/blahgeek/kindledxpush/raw/master/doc/1.png)
-
 
 相应选项的value即设备ID. 
 

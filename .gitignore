@@ -5,3 +5,7 @@ config.py
 project_state
 main.db
 main.log
+queryPdocs
+*.swp
+
+
