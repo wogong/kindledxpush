@@ -1,26 +1,41 @@
 #!/usr/bin/env python
-# -*- coding=UTF-8 -*-
+# -*- coding: utf-8 -*-
 
 import logging
 import sqlite3
 import sys
+import re
 from os import path
 from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
-from config import EMAIL, PASSWORD, DEVICE
+from config import EMAIL, PASSWORD, DEVICE, COUNT
+
 
 reload(sys)
 if hasattr(sys, 'setdefaultencoding'):
-    sys.setdefaultencoding('UTF-8')
-
+    sys.setdefaultencoding('utf-8')
 
 db = sqlite3.connect(path.join(sys.path[0], 'main.db'))
 cursor = db.cursor()
 
 s = requests.session()
 s.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:28.0) Gecko/20100101 Firefox/28.0'})
+
+def translate(raw_title):
+    def trans(unicode):
+        return unichr(int(unicode, 16)).encode('utf-8')
+
+    if not raw_title.find(';'):
+        return raw_title
+    characters = re.findall(r'(?<=&#x).{4}', raw_title)
+    date = raw_title.split(';')[-1]
+
+    title = ''
+    for character in characters:
+        title = title + trans(character) 
+    return title + date
 
 def get_hidden_form_data(page):
     hidden_form_data = dict()
@@ -40,9 +55,9 @@ def login(email, password):
 
 def get_contents():
     url = 'https://www.amazon.com/gp/digital/fiona/manage/features/order-history/ajax/queryPdocs.html'
-    r = s.post(url, {'offset': 0, 'count': 15, 
+    r = s.post(url, {'offset': 0, 'count': COUNT, 
         'contentType': 'Personal Document', 'queryToken': 0, 'isAjax': 1})
-    return [{'category': item['category'], 'contentName': item['asin']} 
+    return [{'category': item['category'], 'contentName': item['asin'], 'title': item['title']} 
             for item in r.json()['data']['items']]
 
 def deliver_content(content):
@@ -65,7 +80,7 @@ def deliver_all(contents):
     contents = filter(lambda x: not contentInDB(x['contentName']), contents)
     for content in contents:
         try:
-            logging.info('delivering ' + content['contentName'])
+            logging.info('delivering ' + translate(content['title']))
             deliver_content(content)
         except:
             logging.error('Error, ignore')
