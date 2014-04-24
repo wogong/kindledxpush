@@ -1,9 +1,10 @@
+## Kindledxpush
 
-注：本项目从blahgeek处fork过来
+注：本项目从[blahgeek][1]处fork过来
 
-增加的功能有：推送文档记录中文标题而不是asian
+增加的功能有：日志中记录推送文档中文标题而不是asian
 
-然后就是写了以下关于这个过程的部分细节，详见wiki
+然后就是写了以下关于这个过程的部分细节，详见[wiki][2]
 
 ---
 
@@ -30,5 +31,6 @@
 ![](./src/device_id.png)
 
 
-
+[1]: https://github.com/blahgeek/kindledxpush
+[2]: https://github.com/lord63/kindledxpush/wiki
 
