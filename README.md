@@ -1,4 +1,12 @@
 
+注：本项目从blahgeek处fork过来
+
+增加的功能有：推送文档记录中文标题而不是asian
+
+然后就是写了以下关于这个过程的部分细节，详见wiki
+
+---
+
 在国内，Kindle DX 3G的推送并不是免费的。这里的不是免费指的是：
 
 - 通过发送邮件至`@kindle.com`或者使用`Send To Kindle`浏览器插件，将个人文档自动发送至Kindle，是收费的
@@ -15,11 +23,12 @@
 
 最后一个设备ID，需要在网页上查看。进入`Your Kindle Library`，选择一个文档，点击Action-Deliver，在出现的窗口中审查元素（查看源代码）。
 
-![](https://github.com/blahgeek/kindledxpush/raw/master/doc/1.png)
+![](./src/push_button.png)
 
 相应选项的value即设备ID. 
 
-![](https://github.com/blahgeek/kindledxpush/raw/master/doc/2.png)
+![](./src/device_id.png)
+
 
 
 

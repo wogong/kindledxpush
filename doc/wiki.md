@@ -64,7 +64,7 @@ post内容：
 
 
 ---
-`diliver_content()`下的url：
+`deliver_content()`下的url：
 
 `https://www.amazon.com/gp/digital/fiona/content-download/fiona-ajax.html/ref=kinw_myk_ro_send`
 
