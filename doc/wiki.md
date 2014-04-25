@@ -1,6 +1,5 @@
 ## Welcome to the kindledxpush wiki!
 
-
 登录：
 
 那个超长的链接玩意其实是那个`sign in`button的，而当填写邮箱和密码后点击登录后post的前11个
@@ -11,7 +10,12 @@
     password： 你的密码
     metadata1: 暂时不明是什么东西
 
+![](../src/hidden_data.png)
+
+![](../src/login.png)
+
 ---
+
 get_content()下的url
 
 `https://www.amazon.com/gp/digital/fiona/manage/features/order-history/ajax/queryPdocs.html`
@@ -24,6 +28,8 @@ post内容：
     randomizer: 一串数字，不明
     queryToken: 0
     isAjax: 1
+
+![](../src/get_content.png)
 
 得到的的json
 
@@ -64,6 +70,7 @@ post内容：
 
 
 ---
+
 `deliver_content()`下的url：
 
 `https://www.amazon.com/gp/digital/fiona/content-download/fiona-ajax.html/ref=kinw_myk_ro_send`
@@ -76,6 +83,8 @@ post内容：
     category: kindle_pdoc
     title: json下item每个字典的'title'的value
 
+![](../src/push.png)
+
 发送成功的话
 
 会向`https://www.amazon.com/gp/digital/fiona/manage/features/order-history/ajax/blank.html/ref=kinw_myk_pdocs_deliver`
@@ -83,3 +92,7 @@ post内容：
 post数据
 
     isAjax： 1
+
+![](../src/check.png)
+
+
