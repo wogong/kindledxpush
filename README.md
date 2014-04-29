@@ -46,11 +46,11 @@
 
 最后一个设备ID，需要在网页上查看。进入`Your Kindle Library`，选择一个文档，点击Action-Deliver，在出现的窗口中审查元素（查看源代码）。
 
-![](./src/push_button.png)
+![](./img/push_button.png)
 
 相应选项的value即设备ID. 
 
-![](./src/device_id.png)
+![](./img/device_id.png)
 
 
 [1]: https://github.com/blahgeek/kindledxpush
