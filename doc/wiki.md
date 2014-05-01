@@ -10,9 +10,9 @@
     password： 你的密码
     metadata1: 暂时不明是什么东西
 
-![](../src/hidden_data.png)
+![](../img/hidden_data.png)
 
-![](../src/login.png)
+![](../img/login.png)
 
 ---
 
@@ -29,7 +29,7 @@ post内容：
     queryToken: 0
     isAjax: 1
 
-![](../src/get_content.png)
+![](../img/get_content.png)
 
 得到的的json
 
@@ -83,7 +83,7 @@ post内容：
     category: kindle_pdoc
     title: json下item每个字典的'title'的value
 
-![](../src/push.png)
+![](../img/push.png)
 
 发送成功的话
 
@@ -93,6 +93,6 @@ post数据
 
     isAjax： 1
 
-![](../src/check.png)
+![](../img/check.png)
 
 
