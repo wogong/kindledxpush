@@ -33,7 +33,7 @@ def translate(raw_title):
     def trans(unicode):
         return unichr(int(unicode, 16)).encode('utf-8')
 
-    if not '&#x' in raw_title:
+    if '&#x' not in raw_title:
         return raw_title
     characters = re.findall(r'(?<=&#x).{4}', raw_title)
     date = raw_title.split(';')[-1]
@@ -58,7 +58,7 @@ def get_hidden_form_data(page):
 def login(email, password):
     '''To login in to amazom.com
 
-    The long url is the 'sign in' botton, the short is the 'sign in our 
+    The long url is the 'sign in' botton, the short is the 'sign in our
     secure sever' botton.'''
 
     logging.info('Login...')
@@ -81,7 +81,8 @@ def get_contents():
     url = ('https://www.amazon.com/gp/digital/fiona/manage/features/'
            'order-history/ajax/queryPdocs.html')
     r = s.post(url, {'offset': 0, 'count': COUNT,
-        'contentType': 'Personal Document', 'queryToken': 0, 'isAjax': 1})
+                     'contentType': 'Personal Document',
+                     'queryToken': 0, 'isAjax': 1})
     return [{'category': item['category'], 'contentName': item['asin'],
             'title': item['title']} for item in r.json()['data']['items']]
 
