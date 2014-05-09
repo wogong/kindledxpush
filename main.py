@@ -63,13 +63,14 @@ def login(email, password):
 
     logging.info('Login...')
     login_url = ('https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc'
-        '_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth'
-        '%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.'
-        'net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid'
-        '.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A'
-        '%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth'
-        '_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fyourstore'
-        '%2Fhome%3Fie%3DUTF8%26ref_%3Dgno_signin')
+                 '_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.n'
+                 'et%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%'
+                 '2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openi'
+                 'd.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net'
+                 '%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2'
+                 'Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=0&openid.r'
+                 'eturn_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fyourstore%2Fhom'
+                 'e%3Fie%3DUTF8%26ref_%3Dgno_signin')
     login_post_url = 'https://www.amazon.com/ap/signin'
     login_page = BeautifulSoup(s.get(login_url).text)
     data = get_hidden_form_data(login_page)
@@ -125,9 +126,13 @@ def deliver_all(contents):
     db.commit()
 
 
+logging.basicConfig(filename=path.join(sys.path[0], 'main.log'),
+                    level='INFO',
+                    format='%(asctime)s [%(levelname)s] %(message)s')
+# Disable unwanted log message from the requests library
+requests_log = logging.getLogger("requests")
+requests_log.setLevel(logging.WARNING)
+
 if __name__ == '__main__':
-    logging.basicConfig(filename=path.join(sys.path[0], 'main.log'),
-                        level='INFO',
-                        format='%(asctime)s [%(levelname)s] %(message)s')
     login(EMAIL, PASSWORD)
     deliver_all(get_contents())
