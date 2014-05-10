@@ -62,6 +62,7 @@ def login(email, password):
     secure sever' botton.'''
 
     logging.info('Login...')
+    print 'Login...'
     login_url = ('https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc'
                  '_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.n'
                  'et%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%'
@@ -93,7 +94,7 @@ def deliver_content(content):
            'fiona-ajax.html/ref=kinw_myk_ro_send')
     content.update({'isAjax': '1', 'deviceID': DEVICE})
     r = s.post(url, content)
-    assert r.json()['data'] == 1    # Whether successfully delivered it
+    assert r.json()['data'] == 1    # Whether successfully delivered it or not
 
 
 def deliver_all(contents):
@@ -101,6 +102,7 @@ def deliver_all(contents):
 
     Once delivered it, save it's asin in database.'''
     logging.info('Delivering...')
+    print 'Delivering...'
 
     def contentInDB(content):
         try:
@@ -115,12 +117,15 @@ def deliver_all(contents):
     for content in contents:
         try:
             logging.info('delivering ' + translate(content['title']))
+            print 'delivering' + translate(content['title'])
             deliver_content(content)
         except:
             logging.error('Error, ignore')
+            print 'Error, ignore'
             pass
         else:
             logging.info('Done. Save to db.')
+            print 'Done. Save to db.'
             cursor.execute('insert into content values ("%s")' %
                            content['contentName'])
     db.commit()
