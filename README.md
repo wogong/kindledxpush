@@ -2,7 +2,7 @@
 
 注：本项目从[blahgeek][1]处fork过来
 
-增加的功能有：日志中记录推送文档中文标题而不是asian
+增加的功能有：日志中记录推送文档title而不是asin，支持中文。
 
 然后就是写了以下关于这个过程的部分细节，详见[wiki][2]
 
@@ -24,9 +24,9 @@
 
 依赖安装：
 
-推荐使用`pip`，如果没有，首先安装[`easy_install`][3]
+推荐使用`pip`，如果没有，首先安装[`setuptools`][3]
 
-    $ python easy_install.py
+    $ python ez_setup.py
     $ easy_install pip
 
 如果有`pip`，直接安装
@@ -42,7 +42,7 @@
     EMAIL = "xxx@gmail.com"  # 你的用户名
     PASSWORD = "xxxxxx"      # 你的密码
     DEVICE = "xxxxxx"        # 你的设备ID
-    COUNT = 15               # 一次要检查投递的文档，默认是15（一页），第一次如果有很多要投递，请设大一些或者给直接精确数值
+    COUNT = 15               # 一次要检查投递的文档，默认是15（一页），第一次如果有很多要投递，请设大一些，以后建议仍旧设置为15。
 
 最后一个设备ID，需要在网页上查看。进入`Your Kindle Library`，选择一个文档，点击Action-Deliver，在出现的窗口中审查元素（查看源代码）。
 
