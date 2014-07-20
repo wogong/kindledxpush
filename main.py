@@ -9,7 +9,7 @@ from os import path
 
 import requests
 from bs4 import BeautifulSoup
-from config import EMAIL, PASSWORD, DEVICE, COUNT
+from config import EMAIL, PASSWORD, COUNT
 
 # Set default encoding from ascii to utf-8
 reload(sys)
@@ -89,10 +89,17 @@ def get_contents():
             'title': item['title']} for item in r.json()['data']['items']]
 
 
+def get_deviceID():
+    r = s.post('https://www.amazon.com/mn/dcw/myx/ajax-activity',
+              data={'data' :'{"param":{"GetDevices":{}}}'})
+    deviceID = r.json()['GetDevices']['devices'][0]['deviceAccountId']
+    return deviceID
+
+
 def deliver_content(content):
     url = ('https://www.amazon.com/gp/digital/fiona/content-download/'
            'fiona-ajax.html/ref=kinw_myk_ro_send')
-    content.update({'isAjax': '1', 'deviceID': DEVICE})
+    content.update({'isAjax': '1', 'deviceID': get_deviceID()})
     r = s.post(url, content)
     assert r.json()['data'] == 1    # Whether successfully delivered it or not
 
