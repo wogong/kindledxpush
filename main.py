@@ -124,7 +124,7 @@ def deliver_all(contents):
     for content in contents:
         try:
             logging.info('delivering ' + translate(content['title']))
-            print 'delivering' + translate(content['title'])
+            print 'delivering ' + translate(content['title'])
             deliver_content(content)
         except:
             logging.error('Error, ignore')
