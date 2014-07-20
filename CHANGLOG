@@ -1,0 +1,17 @@
+2014.4.23：
+- record `title` rather than `asin` in log files.
+- support chinese in log files.
+
+
+2014.4.24： 
+- refine code style, add comments
+- add wiki
+
+
+2014.5.9：
+- diable the unwanted Requests log information
+
+
+2014.7.20：
+- automatically get deviceID
+
