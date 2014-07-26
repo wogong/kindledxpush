@@ -1,11 +1,14 @@
 # KindleDXPush
 
+This project was created by [@blahgeek][1], now maintained by [@lord63][2].
+
 ## Intro
 
 As we all know, we can use Amazon's free 3G network to deliver our docs, but we need
 to manually click the deliver buttom in the browser. This script is born to rescue
 us from this boring thing. Config this script, add it to the `crontab` and you'are done.
 All your docs will be sent to your kindle automatically.
+
 
 ## Requirement
 
@@ -41,3 +44,11 @@ just run it
 ## Wiki
 
 see [wiki](https://github.com/lord63/kindledxpush/wiki)
+
+## License
+
+MIT
+
+
+[1]: https://github.com/blahgeek
+[2]: https://github.com/lord63
