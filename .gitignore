@@ -1,11 +1,13 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+
 config.py
-project_state
 main.db
 main.log
-queryPdocs
-*.swp
 
+# my temp file
+/temp
 
+# virtualenv venv folder
+/venv
