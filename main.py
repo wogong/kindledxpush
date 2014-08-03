@@ -5,10 +5,13 @@ import logging
 import sqlite3
 import sys
 import re
+import os
+import json
 from os import path
 
 import requests
 from bs4 import BeautifulSoup
+from terminal import Command
 from config import EMAIL, PASSWORD, COUNT
 
 # Set default encoding from ascii to utf-8
@@ -137,13 +140,34 @@ def deliver_all(contents):
                            content['contentName'])
     db.commit()
 
+def main():
+    command = Command('kindledxpush', 'automatically deliver you doc to your kindle')
 
-logging.basicConfig(filename=path.join(sys.path[0], 'main.log'),
-                    level='INFO',
-                    format='%(asctime)s [%(levelname)s] %(message)s')
-# Disable unwanted log message from the requests library
-requests_log = logging.getLogger("requests")
-requests_log.setLevel(logging.WARNING)
+    try:
+        with open(os.path.join(sys.path[0], 'kindle_config.json')) as f:
+            config = json.load(f)
+    except IOError:
+        sys.exit("Check your config file please.")
+
+    @command.action
+    def read(number=config['number']):
+        """
+        read the log file
+
+        :param number: the count of days
+        :option number: -n, --number [number]
+        """
+        file_path = os.path.join(config['log_directory'], 'kindle.log')
+        os.system('tail -n {0} {1}'.format(number, file_path))
+    command.parse()
+
+    logging.basicConfig(
+            filename=os.path.join(config['log_directory'], 'kindle.log'),
+            level='INFO',
+            format='%(asctime)s [%(levelname)s] %(message)s')
+    # Disable unwanted log message from the requests library
+    requests_log = logging.getLogger("requests")
+    requests_log.setLevel(logging.WARNING)
 
 if __name__ == '__main__':
     login(EMAIL, PASSWORD)
