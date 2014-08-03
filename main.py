@@ -7,21 +7,16 @@ import sys
 import re
 import os
 import json
-from os import path
 
 import requests
 from bs4 import BeautifulSoup
 from terminal import Command
-from config import EMAIL, PASSWORD, COUNT
+#from config import EMAIL, PASSWORD, COUNT
 
 # Set default encoding from ascii to utf-8
 reload(sys)
 if hasattr(sys, 'setdefaultencoding'):
     sys.setdefaultencoding('utf-8')
-
-# Connect to the database which lies in the current directory
-db = sqlite3.connect(path.join(sys.path[0], 'main.db'))
-cursor = db.cursor()
 
 # User-agent is necessary, or it'll occur `KeyError: 'data' `.
 s = requests.session()
@@ -44,7 +39,7 @@ def translate(raw_title):
     title = ''
     for character in characters:
         title = title + trans(character)
-    return title + date   # Date is a configuration in my KindleEar
+    return title + date
 
 
 def get_hidden_form_data(page):
@@ -58,7 +53,7 @@ def get_hidden_form_data(page):
     return hidden_form_data
 
 
-def login(email, password):
+def login(config):
     '''To login in to amazom.com
 
     The long url is the 'sign in' botton, the short is the 'sign in our
@@ -78,14 +73,14 @@ def login(email, password):
     login_post_url = 'https://www.amazon.com/ap/signin'
     login_page = BeautifulSoup(s.get(login_url).text)
     data = get_hidden_form_data(login_page)
-    data.update({'email': email, 'password': password})
+    data.update({'email': config['email'], 'password': config['password']})
     s.post(login_post_url, data)
 
 
-def get_contents():
+def get_contents(config):
     url = ('https://www.amazon.com/gp/digital/fiona/manage/features/'
            'order-history/ajax/queryPdocs.html')
-    r = s.post(url, {'offset': 0, 'count': COUNT,
+    r = s.post(url, {'offset': 0, 'count': config['count'],
                      'contentType': 'Personal Document',
                      'queryToken': 0, 'isAjax': 1})
     return [{'category': item['category'], 'contentName': item['asin'],
@@ -107,7 +102,7 @@ def deliver_content(content):
     assert r.json()['data'] == 1    # Whether successfully delivered it or not
 
 
-def deliver_all(contents):
+def deliver_all(contents, db):
     '''Deliver all the contents which haven't been delivered before
 
     Once delivered it, save it's asin in database.'''
@@ -116,12 +111,12 @@ def deliver_all(contents):
 
     def contentInDB(content):
         try:
-            cursor.execute('select * from content where name = "%s"' % content)
+            db.cursor.execute('select * from content where name = "%s"' % content)
         except sqlite3.OperationalError:
-            cursor.execute('create table content (name text)')
+            db.cursor.execute('create table content (name text)')
             return False
         else:
-            return False if cursor.fetchone() is None else True
+            return False if db.cursor.fetchone() is None else True
 
     contents = filter(lambda x: not contentInDB(x['contentName']), contents)
     for content in contents:
@@ -136,7 +131,7 @@ def deliver_all(contents):
         else:
             logging.info('Done. Save to db.')
             print 'Done. Save to db.'
-            cursor.execute('insert into content values ("%s")' %
+            db.cursor.execute('insert into content values ("%s")' %
                            content['contentName'])
     db.commit()
 
@@ -157,18 +152,24 @@ def main():
         :param number: the count of days
         :option number: -n, --number [number]
         """
-        file_path = os.path.join(config['log_directory'], 'kindle.log')
+        file_path = os.path.join(config['directory'], 'kindle.log')
         os.system('tail -n {0} {1}'.format(number, file_path))
     command.parse()
 
     logging.basicConfig(
-            filename=os.path.join(config['log_directory'], 'kindle.log'),
+            filename=os.path.join(config['directory'], 'kindle.log'),
             level='INFO',
             format='%(asctime)s [%(levelname)s] %(message)s')
     # Disable unwanted log message from the requests library
     requests_log = logging.getLogger("requests")
     requests_log.setLevel(logging.WARNING)
 
+   # Connect to the database which lies in the current directory
+    #db = sqlite3.connect(path.join(sys.path[0], 'main.db'))
+    db = sqlite3.connect(os.path.join(config['directory'], 'main.db'))
+
+    login(config)
+    deliver_all(get_contents(config), db)
+
 if __name__ == '__main__':
-    login(EMAIL, PASSWORD)
-    deliver_all(get_contents())
+    main()
