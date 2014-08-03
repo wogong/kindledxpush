@@ -106,17 +106,19 @@ def deliver_all(contents, db):
     '''Deliver all the contents which haven't been delivered before
 
     Once delivered it, save it's asin in database.'''
+
     logging.info('Delivering...')
     print 'Delivering...'
 
+    cursor = db.cursor()
     def contentInDB(content):
         try:
-            db.cursor.execute('select * from content where name = "%s"' % content)
+            cursor.execute('select * from content where name = "%s"' % content)
         except sqlite3.OperationalError:
-            db.cursor.execute('create table content (name text)')
+            cursor.execute('create table content (name text)')
             return False
         else:
-            return False if db.cursor.fetchone() is None else True
+            return False if cursor.fetchone() is None else True
 
     contents = filter(lambda x: not contentInDB(x['contentName']), contents)
     for content in contents:
@@ -127,19 +129,18 @@ def deliver_all(contents, db):
         except:
             logging.error('Error, ignore')
             print 'Error, ignore'
-            pass
         else:
             logging.info('Done. Save to db.')
             print 'Done. Save to db.'
-            db.cursor.execute('insert into content values ("%s")' %
-                           content['contentName'])
+            cursor.execute('insert into content values ("%s")' %
+                              content['contentName'])
     db.commit()
 
 def main():
     command = Command('kindledxpush', 'automatically deliver you doc to your kindle')
 
     try:
-        with open(os.path.join(sys.path[0], 'kindle_config.json')) as f:
+        with open(os.path.join(sys.path[0], 'kindlepush_config.json')) as f:
             config = json.load(f)
     except IOError:
         sys.exit("Check your config file please.")
@@ -152,24 +153,28 @@ def main():
         :param number: the count of days
         :option number: -n, --number [number]
         """
-        file_path = os.path.join(config['directory'], 'kindle.log')
+        file_path = os.path.join(config['directory'], 'kindlepush.log')
         os.system('tail -n {0} {1}'.format(number, file_path))
     command.parse()
 
     logging.basicConfig(
-            filename=os.path.join(config['directory'], 'kindle.log'),
+            filename=os.path.join(config['directory'], 'kindlepush.log'),
             level='INFO',
             format='%(asctime)s [%(levelname)s] %(message)s')
     # Disable unwanted log message from the requests library
     requests_log = logging.getLogger("requests")
     requests_log.setLevel(logging.WARNING)
 
-   # Connect to the database which lies in the current directory
-    #db = sqlite3.connect(path.join(sys.path[0], 'main.db'))
-    db = sqlite3.connect(os.path.join(config['directory'], 'main.db'))
+    # Connect to the database which lies in the current directory
+    # db = sqlite3.connect(path.join(sys.path[0], 'main.db'))
+    db = sqlite3.connect(os.path.join(config['directory'], 'kindlepush.db'))
 
-    login(config)
-    deliver_all(get_contents(config), db)
+    if 'read' not in sys.argv:
+        try:
+            login(config)
+            deliver_all(get_contents(config), db)
+        except KeyError:
+            print 'KeyError, check your config file please.'
 
 if __name__ == '__main__':
     main()
