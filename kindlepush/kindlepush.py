@@ -11,7 +11,6 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from terminal import Command
-#from config import EMAIL, PASSWORD, COUNT
 
 # Set default encoding from ascii to utf-8
 reload(sys)
@@ -84,12 +83,12 @@ def get_contents(config):
                      'contentType': 'Personal Document',
                      'queryToken': 0, 'isAjax': 1})
     return [{'category': item['category'], 'contentName': item['asin'],
-            'title': item['title']} for item in r.json()['data']['items']]
+             'title': item['title']} for item in r.json()['data']['items']]
 
 
 def get_deviceID():
     r = s.post('https://www.amazon.com/mn/dcw/myx/ajax-activity',
-              data={'data' :'{"param":{"GetDevices":{}}}'})
+               data={'data' :'{"param":{"GetDevices":{}}}'})
     deviceID = r.json()['GetDevices']['devices'][0]['deviceAccountId']
     return deviceID
 
@@ -133,11 +132,11 @@ def deliver_all(contents, db):
             logging.info('Done. Save to db.')
             print 'Done. Save to db.'
             cursor.execute('insert into content values ("%s")' %
-                              content['contentName'])
+                           content['contentName'])
     db.commit()
 
 def main():
-    command = Command('kindledxpush', 'automatically deliver you doc to your kindle')
+    command = Command('kindlepush', 'automatically deliver you doc to your kindle')
 
     try:
         with open(os.path.join(sys.path[0], 'kindlepush_config.json')) as f:
@@ -165,8 +164,7 @@ def main():
     requests_log = logging.getLogger("requests")
     requests_log.setLevel(logging.WARNING)
 
-    # Connect to the database which lies in the current directory
-    # db = sqlite3.connect(path.join(sys.path[0], 'main.db'))
+    # Connect to the database lying the directory specified in the config
     db = sqlite3.connect(os.path.join(config['directory'], 'kindlepush.db'))
 
     if 'read' not in sys.argv:
@@ -175,6 +173,8 @@ def main():
             deliver_all(get_contents(config), db)
         except KeyError:
             print 'KeyError, check your config file please.'
+        except requests.exceptions.ConnectionError:
+            print 'Check your network please.'
 
 if __name__ == '__main__':
     main()
