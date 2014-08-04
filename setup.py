@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='kindlepush',
     version='0.1.0',
-    description='Automatically send your doc to your kindle without clicking the deliver button',
+    description='Automatically send your doc to your kindle without clicking the deliver button for 3G device',
     url='https://github.com/lord63/kindledxpush',
     author='lord63',
     author_email='lord63.j@gmail.com',
