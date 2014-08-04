@@ -18,10 +18,11 @@ setup(
         'Programming Language :: Python :: 2.7',
     ],
     keywords='kindle push automatically 3G',
-    package=['kindlepush'],
+    packages=['kindlepush'],
     install_requires=['requests', 'beautifulsoup4', 'terminal'],
     entry_points={
         'console_scripts': [
-            'kindlepush=kindlepush.kindlepush:main']
-        }
+            'kindlepush=kindlepush.kindlepush:main',
+        ],
+    },
 )

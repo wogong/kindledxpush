@@ -12,3 +12,7 @@ config.py
 
 # virtualenv venv folder
 /venv
+
+# python package
+*.egg-info/
+dist/

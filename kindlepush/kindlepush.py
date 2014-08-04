@@ -142,7 +142,7 @@ def main():
         with open(os.path.join(sys.path[0], 'kindlepush_config.json')) as f:
             config = json.load(f)
     except IOError:
-        sys.exit("Check your config file please.")
+        sys.exit("Check your config file. It should in {0}".format(sys.path[0]))
 
     @command.action
     def read(number=config['number']):
