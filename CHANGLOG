@@ -3,7 +3,7 @@
 - support chinese in log files.
 
 
-2014.4.24： 
+2014.4.24：
 - refine code style, add comments
 - add wiki
 
@@ -14,4 +14,8 @@
 
 2014.7.20：
 - automatically get deviceID
+
+2014.8.4:
+- bring it to PyPI: v0.1.0 released
+- get log information using parameter in the terminal
 
