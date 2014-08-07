@@ -87,7 +87,7 @@ def get_contents(config):
 
 def get_deviceID():
     r = s.post('https://www.amazon.com/mn/dcw/myx/ajax-activity',
-               data={'data' :'{"param":{"GetDevices":{}}}'})
+               data={'data': '{"param": {"GetDevices": {}}}'})
     deviceID = r.json()['GetDevices']['devices'][0]['deviceAccountId']
     return deviceID
 
@@ -107,6 +107,7 @@ def deliver_all(contents, db):
 
     print 'Delivering...'
     cursor = db.cursor()
+
     def contentInDB(content):
         try:
             cursor.execute('select * from content where name = "%s"' % content)
@@ -117,6 +118,9 @@ def deliver_all(contents, db):
             return False if cursor.fetchone() is None else True
 
     contents = filter(lambda x: not contentInDB(x['contentName']), contents)
+    if len(contents) == 0:
+        print 'All the docs in your library have been delivered to your kindle'
+        return
     for content in contents:
         try:
             deliver_content(content)
@@ -131,14 +135,16 @@ def deliver_all(contents, db):
             logging.info('delivered ' + translate(content['title']))
     db.commit()
 
+
 def main():
-    command = Command('kindlepush', 'automatically deliver you doc to your kindle')
+    command = Command('kindlepush',
+                      'automatically deliver your docs to your kindle')
 
     try:
         with open(os.path.join(sys.path[0], 'kindlepush_config.json')) as f:
             config = json.load(f)
     except IOError:
-        sys.exit("Check your config file. It should in {0}".format(sys.path[0]))
+        sys.exit("Check your config file in {0}".format(sys.path[0]))
 
     @command.action
     def read(number=config['number']):
@@ -153,9 +159,9 @@ def main():
     command.parse()
 
     logging.basicConfig(
-            filename=os.path.join(config['directory'], 'kindlepush.log'),
-            level='INFO',
-            format='%(asctime)s [%(levelname)s] %(message)s')
+        filename=os.path.join(config['directory'], 'kindlepush.log'),
+        level='INFO',
+        format='%(asctime)s [%(levelname)s] %(message)s')
     # Disable unwanted log message from the requests library
     requests_log = logging.getLogger("requests")
     requests_log.setLevel(logging.WARNING)
