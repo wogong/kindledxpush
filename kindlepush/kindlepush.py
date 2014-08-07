@@ -58,7 +58,6 @@ def login(config):
     The long url is the 'sign in' botton, the short is the 'sign in our
     secure sever' botton.'''
 
-    logging.info('Login...')
     print 'Login...'
     login_url = ('https://www.amazon.com/ap/signin?_encoding=UTF8&openid.assoc'
                  '_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.n'
@@ -106,9 +105,7 @@ def deliver_all(contents, db):
 
     Once delivered it, save it's asin in database.'''
 
-    logging.info('Delivering...')
     print 'Delivering...'
-
     cursor = db.cursor()
     def contentInDB(content):
         try:
@@ -122,17 +119,16 @@ def deliver_all(contents, db):
     contents = filter(lambda x: not contentInDB(x['contentName']), contents)
     for content in contents:
         try:
-            logging.info('delivering ' + translate(content['title']))
-            print 'delivering ' + translate(content['title'])
             deliver_content(content)
+            print 'delivering ' + translate(content['title'])
         except:
             logging.error('Error, ignore')
             print 'Error, ignore'
         else:
-            logging.info('Done. Save to db.')
-            print 'Done. Save to db.'
             cursor.execute('insert into content values ("%s")' %
                            content['contentName'])
+            print 'Done. Save to db.'
+            logging.info('delivered ' + translate(content['title']))
     db.commit()
 
 def main():
