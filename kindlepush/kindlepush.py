@@ -125,9 +125,9 @@ def deliver_all(contents, db):
         try:
             deliver_content(content)
             print 'delivering ' + translate(content['title'])
-        except:
-            logging.error('Error, ignore')
-            print 'Error, ignore'
+        except Exception, e:
+            logging.error(repr(e))
+            print repr(e)
         else:
             cursor.execute('insert into content values ("%s")' %
                            content['contentName'])
