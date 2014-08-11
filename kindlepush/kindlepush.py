@@ -118,9 +118,9 @@ def deliver_all(contents, db):
             return False if cursor.fetchone() is None else True
 
     contents = filter(lambda x: not contentInDB(x['contentName']), contents)
-    if len(contents) == 0:
-        print 'All the docs in your library have been delivered to your kindle'
-        return
+    if not contents:
+        sys.exit('All the docs in your library have been delivered'
+                 'to your kindle')
     for content in contents:
         try:
             deliver_content(content)

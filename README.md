@@ -32,7 +32,9 @@ All your docs will be sent to your kindle automatically.
 
 ## Usage
 
-touch a new file named `kindlepush_config.json` under `/usr/local/bin`, including those:
+    $ kindlepush [read [(-n | --number) NUMBER]]
+
+first, touch a new file named `kindlepush_config.json` under `/usr/local/bin`, including those:
 
     {
         "email": "xxxxxx",              # your email
