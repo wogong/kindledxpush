@@ -139,6 +139,7 @@ def deliver_all(contents, db):
 def main():
     command = Command('kindlepush',
                       'automatically deliver your docs to your kindle')
+    command.option('-c, --count [count]', 'the count of the docs to deliver')
 
     try:
         with open(os.path.join(sys.path[0], 'kindlepush_config.json')) as f:
@@ -168,6 +169,10 @@ def main():
 
     # Connect to the database lying the directory specified in the config
     db = sqlite3.connect(os.path.join(config['directory'], 'kindlepush.db'))
+
+    # overwrite the value of count if user has specified it
+    if command.count:
+        config['count'] = command.count
 
     if 'read' not in sys.argv:
         try:
