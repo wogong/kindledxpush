@@ -1,8 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from setuptools import setup
+
+from kindlepush import kindlepush
 
 setup(
     name='kindlepush',
-    version='0.1.0',
+    version=kindlepush.__version__,
     description='Automatically send your doc to your kindle without clicking the deliver button for 3G device',
     url='https://github.com/lord63/kindledxpush',
     author='lord63',
