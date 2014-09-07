@@ -38,17 +38,21 @@ if hasattr(sys, 'setdefaultencoding'):
     sys.setdefaultencoding('utf-8')
 
 # User-agent is necessary, or it'll occur `KeyError: 'data' `.
-s = requests.session()
-s.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; \
-                   rv:28.0) Gecko/20100101 Firefox/28.0'})
+GLOBAL_SESSION = requests.Session()
+GLOBAL_SESSION.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux \
+                               x86_64; rv:28.0) Gecko/20100101 Firefox/28.0'})
 
 
 def translate(raw_title):
     '''translate escape characters to utf-8
 
     To support chinese in log.'''
-    def trans(unicode):
-        return unichr(int(unicode, 16)).encode('utf-8')
+    def trans(unicode_character):
+        """convert the unicode code to unicode string
+
+        http://stackoverflow.com/questions/867866/
+        convert-unicode-codepoint-to-utf8-hex-in-python"""
+        return unichr(int(unicode_character, 16)).encode('utf-8')
 
     if '&#x' not in raw_title:
         return raw_title
@@ -89,46 +93,54 @@ def login(config):
                  'eturn_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fyourstore%2Fhom'
                  'e%3Fie%3DUTF8%26ref_%3Dgno_signin')
     login_post_url = 'https://www.amazon.com/ap/signin'
-    login_page = BeautifulSoup(s.get(login_url).text)
+    login_page = BeautifulSoup(GLOBAL_SESSION.get(login_url).text)
     data = get_hidden_form_data(login_page)
     data.update({'email': config['email'], 'password': config['password']})
-    s.post(login_post_url, data)
+    GLOBAL_SESSION.post(login_post_url, data)
 
 
 def get_contents(config):
+    """get all the information of docs in our kindle library"""
     url = ('https://www.amazon.com/gp/digital/fiona/manage/features/'
            'order-history/ajax/queryPdocs.html')
-    r = s.post(url, {'offset': 0, 'count': config['count'],
-                     'contentType': 'Personal Document',
-                     'queryToken': 0, 'isAjax': 1})
-    return [{'category': item['category'], 'contentName': item['asin'],
-             'title': item['title']} for item in r.json()['data']['items']]
+    request = GLOBAL_SESSION.post(url, {'offset': 0, 'count': config['count'],
+                                        'contentType': 'Personal Document',
+                                        'queryToken': 0, 'isAjax': 1})
+    return [
+        {'category': item['category'], 'contentName': item['asin'],
+         'title': item['title']} for item in request.json()['data']['items']
+        ]
 
 
-def get_deviceID():
-    r = s.post('https://www.amazon.com/mn/dcw/myx/ajax-activity',
-               data={'data': '{"param": {"GetDevices": {}}}'})
-    deviceID = r.json()['GetDevices']['devices'][0]['deviceAccountId']
-    return deviceID
+def get_device_id():
+    """automatically get the device id used when sending your docs"""
+    request = GLOBAL_SESSION.post(
+        'https://www.amazon.com/mn/dcw/myx/ajax-activity',
+        data={'data': '{"param": {"GetDevices": {}}}'})
+    device_id = request.json()['GetDevices']['devices'][0]['deviceAccountId']
+    return device_id
 
 
 def deliver_content(content):
+    """the function to deliver one doc"""
     url = ('https://www.amazon.com/gp/digital/fiona/content-download/'
            'fiona-ajax.html/ref=kinw_myk_ro_send')
-    content.update({'isAjax': '1', 'deviceID': get_deviceID()})
-    r = s.post(url, content)
-    assert r.json()['data'] == 1    # Whether successfully delivered it or not
+    content.update({'isAjax': '1', 'deviceID': get_device_id()})
+    request = GLOBAL_SESSION.post(url, content)
+    # Whether successfully delivered it or not
+    assert request.json()['data'] == 1
 
 
-def deliver_all(contents, db):
+def deliver_all(contents, database):
     '''Deliver all the contents which haven't been delivered before
 
     Once delivered it, save it's asin in database.'''
 
-    print 'Delivering...'
-    cursor = db.cursor()
+    print 'Delivering'
+    cursor = database.cursor()
 
-    def contentInDB(content):
+    def content_in_database(content):
+        """check whether a doc has been delivered or not"""
         try:
             cursor.execute('select * from content where name = "%s"' % content)
         except sqlite3.OperationalError:
@@ -137,7 +149,8 @@ def deliver_all(contents, db):
         else:
             return False if cursor.fetchone() is None else True
 
-    contents = filter(lambda x: not contentInDB(x['contentName']), contents)
+    contents = filter(lambda x: not content_in_database(x['contentName']),
+                      contents)
     if not contents:
         sys.exit('All the docs in your library have been delivered'
                  'to your kindle')
@@ -145,15 +158,15 @@ def deliver_all(contents, db):
         try:
             deliver_content(content)
             print 'delivering ' + translate(content['title'])
-        except Exception, e:
-            logging.error(repr(e))
-            print repr(e)
+        except Exception, error:
+            logging.error(repr(error))
+            print repr(error)
         else:
             cursor.execute('insert into content values ("%s")' %
                            content['contentName'])
-            print 'Done. Save to db.'
+            print 'Done. Save to database.'
             logging.info('delivered ' + translate(content['title']))
-    db.commit()
+    database.commit()
 
 
 def main():
@@ -190,7 +203,8 @@ def main():
     requests_log.setLevel(logging.WARNING)
 
     # Connect to the database lying the directory specified in the config
-    db = sqlite3.connect(os.path.join(config['directory'], 'kindlepush.db'))
+    database = sqlite3.connect(os.path.join(config['directory'],
+                                            'kindlepush.db'))
 
     # overwrite the value of count if user has specified it
     if command.count:
@@ -199,7 +213,7 @@ def main():
     if 'read' not in sys.argv:
         try:
             login(config)
-            deliver_all(get_contents(config), db)
+            deliver_all(get_contents(config), database)
         except KeyError:
             print 'KeyError, check your config file please.'
         except requests.exceptions.ConnectionError:
