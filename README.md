@@ -32,7 +32,14 @@ All your docs will be sent to your kindle automatically.
 
 ## Usage
 
-    $ kindlepush [read [(-n | --number) NUMBER]]
+    Usage: kindlepush <command> [option]
+    Options:
+      -h, --help            output the help menu
+      -V, --version         output the version number
+      -c, --count [count]   the count of the docs to deliver
+      -n, --number [number] show how may logs
+    Commands:
+      read                  read the log file
 
 first, touch a new file named `kindlepush_config.json` under `/usr/local/bin`, including those:
 
@@ -58,10 +65,10 @@ read the log file to get to know the docs which you have delivered:
 (default is 4 messages, you can use `-n NUMBER` to get more information.)
 
     $ kindlepush read
-    2014-08-04 09:11:48,546 [INFO] Login...
-    2014-08-04 09:11:52,881 [INFO] Delivering...
-    2014-08-04 09:11:52,886 [INFO] delivering YOURDOC
-    2014-08-04 09:11:53,865 [INFO] Done. Save to db.
+    2014-09-23 07:40:32,077 [INFO] delivered YOURDOC
+    2014-09-23 07:40:33,125 [INFO] delivered YOURDOC
+    2014-09-23 07:40:34,183 [INFO] delivered YOURDOC
+    2014-09-24 14:12:34,506 [INFO] delivered YOURDOC
 
 Get help via `kindlepush -h` and `kindlepush read -h`.
 

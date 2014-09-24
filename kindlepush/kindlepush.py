@@ -9,12 +9,13 @@
     is for 3G devices, such as kindle dx.
     It was created by @blahgeek, now maintained by @lord63.
 
-    :copyright: (c) 2014 BlahGeek 2014 lord63.
+    :copyright: (c) 2014 BlahGeek.
+    :copyright: (c) 2014 lord63.
     :license: MIT, see LICENSE for more details.
 """
 
 __title__ = "kindlepush"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "BlahGeek"
 __maintainer__ = "lord63"
 __license__ = "MIT"

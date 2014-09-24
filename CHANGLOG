@@ -19,3 +19,7 @@
 - bring it to PyPI: v0.1.0 released
 - get log information using parameter in the terminal
 
+2014.9.24
+- v0.2.0 released
+- add parameter "count" and version
+- refine code style, logging, prompt, exception
