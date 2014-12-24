@@ -27,6 +27,7 @@ import sys
 import re
 import os
 import json
+import HTMLParser
 
 import requests
 from bs4 import BeautifulSoup
@@ -44,26 +45,13 @@ GLOBAL_SESSION.headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux \
                                x86_64; rv:28.0) Gecko/20100101 Firefox/28.0'})
 
 
-def translate(raw_title):
-    '''translate escape characters to utf-8
-
-    To support chinese in log.'''
-    def trans(unicode_character):
-        """convert the unicode code to unicode string
-
-        http://stackoverflow.com/questions/867866/
-        convert-unicode-codepoint-to-utf8-hex-in-python"""
-        return unichr(int(unicode_character, 16)).encode('utf-8')
-
-    if '&#x' not in raw_title:
+def unescape(raw_title):
+    """unescape html character, to support chinese in title"""
+    html_parser = HTMLParser.HTMLParser()
+    if re.search(r'&.*;', raw_title):
+        return html_parser.unescape(raw_title)
+    else:
         return raw_title
-    characters = re.findall(r'(?<=&#x).{4}', raw_title)
-    date = raw_title.split(';')[-1]
-
-    title = ''
-    for character in characters:
-        title = title + trans(character)
-    return title + date
 
 
 def get_hidden_form_data(page):
@@ -122,6 +110,16 @@ def get_device_id():
     return device_id
 
 
+def get_pending_deliveries():
+    """get pending deliveries"""
+    request = GLOBAL_SESSION.post(
+        'https://www.amazon.com/mn/dcw/myx/ajax-activity',
+        data={'data': '{"param": {"GetTodo": {}}}'})
+    titles = [unescape(item['title']) for item in
+              request.json()['GetTodo']['todoItems']]
+    return titles
+
+
 def deliver_content(content):
     """the function to deliver one doc"""
     url = ('https://www.amazon.com/gp/digital/fiona/content-download/'
@@ -158,7 +156,7 @@ def deliver_all(contents, database):
     for content in contents:
         try:
             deliver_content(content)
-            print 'delivering ' + translate(content['title'])
+            print 'delivering ' + unescape(content['title'])
         except Exception, error:
             logging.error(repr(error))
             print repr(error)
@@ -166,7 +164,7 @@ def deliver_all(contents, database):
             cursor.execute('insert into content values ("%s")' %
                            content['contentName'])
             print 'Done. Save to database.'
-            logging.info('delivered ' + translate(content['title']))
+            logging.info('delivered ' + unescape(content['title']))
     database.commit()
 
 
@@ -193,6 +191,17 @@ def main():
         file_path = os.path.join(config['directory'], 'kindlepush.log')
         os.system('tail -n {0} {1}'.format(number, file_path))
 
+    @command.action
+    def pending():
+        """
+        get pending deliveries
+        """
+        login(config)
+        titles = get_pending_deliveries()
+        print "Pending Deliveries:"
+        for title in titles:
+            print '\t{0}'.format(title)
+
     command.parse()
 
     logging.basicConfig(
@@ -211,7 +220,7 @@ def main():
     if command.count:
         config['count'] = command.count
 
-    if 'read' not in sys.argv:
+    if not 'read' and 'pending' in sys.argv:
         try:
             login(config)
             deliver_all(get_contents(config), database)
