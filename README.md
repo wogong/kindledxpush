@@ -30,16 +30,21 @@ All your docs will be sent to your kindle automatically.
 
 * Use sqlite database, don't worry about that a doc will be missed or delivered twice.
 
+* Get pending deliveries.
+
 ## Usage
 
     Usage: kindlepush <command> [option]
+
     Options:
       -h, --help            output the help menu
       -V, --version         output the version number
       -c, --count [count]   the count of the docs to deliver
       -n, --number [number] show how may logs
+
     Commands:
       read                  read the log file
+      pending               get pending deliveries
 
 first, touch a new file named `kindlepush_config.json` under `/usr/local/bin`, including those:
 
@@ -69,6 +74,14 @@ read the log file to get to know the docs which you have delivered:
     2014-09-23 07:40:33,125 [INFO] delivered YOURDOC
     2014-09-23 07:40:34,183 [INFO] delivered YOURDOC
     2014-09-24 14:12:34,506 [INFO] delivered YOURDOC
+
+get pending deliveries:
+
+    $ kindlepush pending
+    Login...
+    Pending Deliveries:
+            你好
+            nice
 
 Get help via `kindlepush -h` and `kindlepush read -h`.
 

@@ -15,7 +15,7 @@
 """
 
 __title__ = "kindlepush"
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __author__ = "BlahGeek"
 __maintainer__ = "lord63"
 __license__ = "MIT"
