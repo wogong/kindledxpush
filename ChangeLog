@@ -1,3 +1,7 @@
+2015.02.09
+- v0.3.1 released
+- fix import error when install it
+
 2014.12.24
 - v0.3.0 released
 - add feature: get pending deliveries, close #5

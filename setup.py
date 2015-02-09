@@ -3,7 +3,7 @@
 
 from setuptools import setup
 
-from kindlepush import kindlepush
+import kindlepush
 
 try:
     import pypandoc

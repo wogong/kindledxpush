@@ -15,7 +15,6 @@
 """
 
 __title__ = "kindlepush"
-__version__ = "0.3.0"
 __author__ = "BlahGeek"
 __maintainer__ = "lord63"
 __license__ = "MIT"
@@ -32,6 +31,8 @@ import HTMLParser
 import requests
 from bs4 import BeautifulSoup
 from terminal import Command
+
+from kindlepush import __version__
 
 
 # Set default encoding from ascii to utf-8
